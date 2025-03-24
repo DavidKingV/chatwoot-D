@@ -61,7 +61,7 @@ export default {
         :src="globalConfig.logoThumbnail"
       />
       <span>
-        {{ useInstallationName($t('POWERED_BY'), globalConfig.brandName) }}
+        RacksLabs
       </span>
     </a>
   </div>
