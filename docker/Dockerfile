@@ -89,6 +89,11 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
 # Generate .git_sha file with current commit hash
 RUN git rev-parse HEAD > /app/.git_sha
 
+# Database preparation (fixed to continue on error)
+RUN if [ "$RAILS_ENV" = "production" ]; then \
+  POSTGRES_STATEMENT_TIMEOUT=600s bundle exec rails db:chatwoot_prepare || echo "Database preparation skipped during build"; \
+  fi
+
 # Remove unnecessary files
 RUN rm -rf /gems/ruby/3.3.0/cache/*.gem \
   && find /gems/ruby/3.3.0/gems/ \( -name "*.c" -o -name "*.o" \) -delete \
@@ -148,5 +153,8 @@ COPY --from=pre-builder /app /app
 COPY --from=pre-builder /app/.git_sha /app/.git_sha
 
 WORKDIR /app
+
+# Running entrypoint commands here rather than in separate script
+CMD bundle exec rails db:chatwoot_prepare && bundle exec rails server -p 3000 -b 0.0.0.0
 
 EXPOSE 3000
