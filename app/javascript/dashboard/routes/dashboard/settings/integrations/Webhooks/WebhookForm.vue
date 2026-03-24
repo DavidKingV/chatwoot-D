@@ -1,4 +1,5 @@
 <script>
+import { mapGetters } from 'vuex';
 import { useVuelidate } from '@vuelidate/core';
 import { required, url, minLength } from '@vuelidate/validators';
 import wootConstants from 'dashboard/constants/globals';
@@ -54,10 +55,12 @@ export default {
     return {
       url: this.value.url || '',
       subscriptions: this.value.subscriptions || [],
+      inboxId: this.value.inbox?.id || null,
       supportedWebhookEvents: SUPPORTED_WEBHOOK_EVENTS,
     };
   },
   computed: {
+    ...mapGetters({ inboxes: 'inboxes/getInboxes' }),
     webhookURLInputPlaceholder() {
       return this.$t(
         'INTEGRATION_SETTINGS.WEBHOOK.FORM.END_POINT.PLACEHOLDER',
@@ -67,12 +70,17 @@ export default {
       );
     },
   },
+  mounted() {
+    this.$store.dispatch('inboxes/get');
+  },
   methods: {
     onSubmit() {
-      this.$emit('submit', {
+      const payload = {
         url: this.url,
         subscriptions: this.subscriptions,
-      });
+      };
+      if (this.inboxId) payload.inbox_id = this.inboxId;
+      this.$emit('submit', payload);
     },
     getI18nKey,
   },
@@ -94,6 +102,21 @@ export default {
         <span v-if="v$.url.$error" class="message">
           {{ $t('INTEGRATION_SETTINGS.WEBHOOK.FORM.END_POINT.ERROR') }}
         </span>
+      </label>
+      <label class="mb-1">
+        {{ $t('INTEGRATION_SETTINGS.WEBHOOK.FORM.INBOX.LABEL') }}
+        <select v-model="inboxId" class="w-full">
+          <option :value="null">
+            {{ $t('INTEGRATION_SETTINGS.WEBHOOK.FORM.INBOX.ALL_INBOXES') }}
+          </option>
+          <option
+            v-for="inbox in inboxes"
+            :key="inbox.id"
+            :value="inbox.id"
+          >
+            {{ inbox.name }}
+          </option>
+        </select>
       </label>
       <label :class="{ error: v$.url.$error }" class="mb-2">
         {{ $t('INTEGRATION_SETTINGS.WEBHOOK.FORM.SUBSCRIPTIONS.LABEL') }}

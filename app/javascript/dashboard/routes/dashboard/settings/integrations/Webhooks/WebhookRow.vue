@@ -40,6 +40,12 @@ const subscribedEvents = computed(() => {
       <div class="font-medium break-words text-slate-700 dark:text-slate-100">
         {{ webhook.url }}
       </div>
+      <div
+        v-if="webhook.inbox"
+        class="block mt-1 text-xs text-slate-400 dark:text-slate-500"
+      >
+        {{ webhook.inbox.name }}
+      </div>
       <div class="block mt-1 text-sm text-slate-500 dark:text-slate-400">
         <span class="font-medium">
           {{ $t('INTEGRATION_SETTINGS.WEBHOOK.SUBSCRIBED_EVENTS') }}:

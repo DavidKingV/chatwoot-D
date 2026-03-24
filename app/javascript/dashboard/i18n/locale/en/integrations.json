@@ -49,6 +49,10 @@
           "PLACEHOLDER": "Example: {webhookExampleURL}",
           "ERROR": "Please enter a valid URL"
         },
+        "INBOX": {
+          "LABEL": "Inbox (optional)",
+          "ALL_INBOXES": "All inboxes (global)"
+        },
         "EDIT_SUBMIT": "Update webhook",
         "ADD_SUBMIT": "Create webhook"
       },

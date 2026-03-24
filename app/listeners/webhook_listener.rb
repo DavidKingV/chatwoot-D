@@ -100,8 +100,17 @@ class WebhookListener < BaseListener
     WebhookJob.perform_later(inbox.channel.webhook_url, payload, :api_inbox_webhook)
   end
 
+  def deliver_inbox_webhooks(payload, inbox)
+    inbox.webhooks.inbox_type.each do |webhook|
+      next unless webhook.subscriptions.include?(payload[:event])
+
+      WebhookJob.perform_later(webhook.url, payload)
+    end
+  end
+
   def deliver_webhook_payloads(payload, inbox)
     deliver_account_webhooks(payload, inbox.account)
+    deliver_inbox_webhooks(payload, inbox)
     deliver_api_inbox_webhooks(payload, inbox)
   end
 end
